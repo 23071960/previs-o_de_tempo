@@ -1,27 +1,39 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Meteorológico</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Painel Meteorológico</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js" defer></script>
   <script src="script.js" defer></script>
 </head>
 <body>
   <main class="container">
-    <header class="topo">
-      <div><p class="eyebrow">MONITORAMENTO METEOROLÓGICO</p><h1>Clima em tempo real</h1><p class="subtitulo">Condições atuais e previsão para os próximos dias</p></div>
-      <form id="form-busca" class="busca"><label class="sr-only" for="cidade">Cidade</label><input id="cidade" name="cidade" placeholder="Digite uma cidade" value="Toledo" required minlength="2"><button type="submit">Pesquisar</button></form>
+    <header class="cabecalho">
+      <div><p class="sobretitulo">Open-Meteo + OpenStreetMap</p><h1>☀️ Painel Meteorológico</h1><p>Consulte o clima por cidade, bairro ou rua no Brasil.</p></div>
     </header>
-    <p id="status" class="status" role="status" aria-live="polite"></p>
-    <section class="atual card" aria-labelledby="titulo-atual">
-      <div><p class="eyebrow">CONDIÇÕES ATUAIS</p><h2 id="titulo-atual">Toledo, Paraná</h2><p id="data-atual">—</p><div class="temperatura"><span id="icone-atual" aria-hidden="true">⛅</span><strong id="temperatura">—</strong><span>°C</span></div><p id="descricao">Carregando...</p></div>
-      <div class="metricas"><article><span>Sensação térmica</span><strong id="sensacao">—</strong></article><article><span>Umidade</span><strong id="umidade">—</strong></article><article><span>Vento</span><strong id="vento">—</strong></article><article><span>Precipitação atual</span><strong id="precipitacao">—</strong></article></div>
+    <form id="form-busca" class="busca">
+      <label for="cidade">Localização</label>
+      <div class="busca-linha"><input id="cidade" type="search" placeholder="Ex.: Centro, Toledo, Paraná" required minlength="2" autocomplete="street-address"><button type="submit" id="buscar">Pesquisar</button><button type="button" id="atualizar" disabled>Atualizar</button></div>
+      <small>Para melhorar a busca, informe bairro ou rua, cidade e estado.</small>
+    </form>
+    <p id="status" role="status" aria-live="polite">Digite um local para consultar a previsão.</p>
+    <section id="painel" hidden>
+      <div class="titulo-local"><div><h2 id="nome-local"></h2><p id="data-atualizacao"></p></div><span id="condicao-atual" class="condicao"></span></div>
+      <section aria-label="Condições atuais" class="grade-cards">
+        <article class="card destaque"><h3>🌡️ Temperatura atual</h3><div class="valor" id="temperatura">—</div><p id="sensacao">Sensação: —</p></article>
+        <article class="card"><h3>💧 Umidade</h3><div class="valor" id="umidade">—</div><p>Umidade relativa do ar</p></article>
+        <article class="card"><h3>🌬️ Vento</h3><div class="valor" id="vento">—</div><p id="rajadas">Rajadas: —</p></article>
+        <article class="card"><h3>🌧️ Chance de chuva hoje</h3><div class="valor" id="chance-chuva">—</div><p id="chuva-acumulada">Precipitação prevista: —</p></article>
+        <article class="card"><h3>☀️ Índice UV máximo hoje</h3><div class="valor" id="uv">—</div><p id="uv-classificacao">—</p></article>
+        <article class="card"><h3>🌅 Sol</h3><div class="valor menor" id="nascer-sol">—</div><p id="por-sol">Pôr do sol: —</p></article>
+      </section>
+      <section class="secao" aria-labelledby="titulo-avisos"><h2 id="titulo-avisos">⚠️ Avisos baseados na previsão</h2><div id="avisos" class="lista-avisos"></div><p class="nota">Avisos indicativos gerados por regras locais. Não são alertas oficiais. Consulte <a href="https://alertas2.inmet.gov.br/" target="_blank" rel="noopener noreferrer">os avisos oficiais do INMET</a>.</p></section>
+      <section class="secao" aria-labelledby="titulo-grafico"><h2 id="titulo-grafico">📈 Temperatura e chance de chuva — próximas 24 horas</h2><div class="grafico-wrapper"><canvas id="grafico-temperatura" role="img" aria-label="Gráfico de temperatura e probabilidade de chuva nas próximas 24 horas"></canvas></div></section>
+      <section class="secao" aria-labelledby="titulo-dias"><h2 id="titulo-dias">🗓️ Previsão para 7 dias</h2><div id="previsao-dias" class="grade-dias"></div></section>
+      <footer>Dados meteorológicos: <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a> · Geocodificação: <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>/Nominatim. Previsões são estimativas por coordenadas, não medições em cada rua.</footer>
     </section>
-    <section class="card" aria-labelledby="titulo-grafico"><div class="cabecalho-secao"><h2 id="titulo-grafico">Temperatura nas próximas 24 horas</h2><button id="atualizar" type="button" class="secundario">Atualizar dados</button></div><div class="grafico"><canvas id="grafico-temperatura" role="img" aria-label="Gráfico da previsão horária de temperatura"></canvas></div></section>
-    <section class="card" aria-labelledby="titulo-previsao"><h2 id="titulo-previsao">Previsão para 7 dias</h2><div id="previsao" class="dias"></div></section>
-    <footer>Dados: <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a> · Horários locais da cidade consultada · Temperaturas e previsões sujeitas a atualização</footer>
   </main>
 </body>
 </html>
